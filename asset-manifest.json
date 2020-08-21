@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/ejiroghene15/Xplayer-react/static/css/main.78c1d985.chunk.css",
-    "main.js": "/ejiroghene15/Xplayer-react/static/js/main.2b5db6c8.chunk.js",
-    "main.js.map": "/ejiroghene15/Xplayer-react/static/js/main.2b5db6c8.chunk.js.map",
-    "runtime-main.js": "/ejiroghene15/Xplayer-react/static/js/runtime-main.89410d1d.js",
-    "runtime-main.js.map": "/ejiroghene15/Xplayer-react/static/js/runtime-main.89410d1d.js.map",
-    "static/css/2.42886335.chunk.css": "/ejiroghene15/Xplayer-react/static/css/2.42886335.chunk.css",
-    "static/js/2.d82adf2a.chunk.js": "/ejiroghene15/Xplayer-react/static/js/2.d82adf2a.chunk.js",
-    "static/js/2.d82adf2a.chunk.js.map": "/ejiroghene15/Xplayer-react/static/js/2.d82adf2a.chunk.js.map",
-    "index.html": "/ejiroghene15/Xplayer-react/index.html",
-    "precache-manifest.0b6505c527d2078131b5274bfb66c853.js": "/ejiroghene15/Xplayer-react/precache-manifest.0b6505c527d2078131b5274bfb66c853.js",
-    "service-worker.js": "/ejiroghene15/Xplayer-react/service-worker.js",
-    "static/css/2.42886335.chunk.css.map": "/ejiroghene15/Xplayer-react/static/css/2.42886335.chunk.css.map",
-    "static/css/main.78c1d985.chunk.css.map": "/ejiroghene15/Xplayer-react/static/css/main.78c1d985.chunk.css.map",
-    "static/js/2.d82adf2a.chunk.js.LICENSE.txt": "/ejiroghene15/Xplayer-react/static/js/2.d82adf2a.chunk.js.LICENSE.txt"
+    "main.css": "/Xplayer-react/static/css/main.78c1d985.chunk.css",
+    "main.js": "/Xplayer-react/static/js/main.86265ed0.chunk.js",
+    "main.js.map": "/Xplayer-react/static/js/main.86265ed0.chunk.js.map",
+    "runtime-main.js": "/Xplayer-react/static/js/runtime-main.0f2252b2.js",
+    "runtime-main.js.map": "/Xplayer-react/static/js/runtime-main.0f2252b2.js.map",
+    "static/css/2.42886335.chunk.css": "/Xplayer-react/static/css/2.42886335.chunk.css",
+    "static/js/2.d82adf2a.chunk.js": "/Xplayer-react/static/js/2.d82adf2a.chunk.js",
+    "static/js/2.d82adf2a.chunk.js.map": "/Xplayer-react/static/js/2.d82adf2a.chunk.js.map",
+    "index.html": "/Xplayer-react/index.html",
+    "precache-manifest.b10c3d381089a1b77e99810cfe311ebf.js": "/Xplayer-react/precache-manifest.b10c3d381089a1b77e99810cfe311ebf.js",
+    "service-worker.js": "/Xplayer-react/service-worker.js",
+    "static/css/2.42886335.chunk.css.map": "/Xplayer-react/static/css/2.42886335.chunk.css.map",
+    "static/css/main.78c1d985.chunk.css.map": "/Xplayer-react/static/css/main.78c1d985.chunk.css.map",
+    "static/js/2.d82adf2a.chunk.js.LICENSE.txt": "/Xplayer-react/static/js/2.d82adf2a.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.89410d1d.js",
+    "static/js/runtime-main.0f2252b2.js",
     "static/css/2.42886335.chunk.css",
     "static/js/2.d82adf2a.chunk.js",
     "static/css/main.78c1d985.chunk.css",
-    "static/js/main.2b5db6c8.chunk.js"
+    "static/js/main.86265ed0.chunk.js"
   ]
 }
