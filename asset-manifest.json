@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Xplayer-react/static/css/main.0dc96e33.chunk.css",
-    "main.js": "/Xplayer-react/static/js/main.51ef543e.chunk.js",
-    "main.js.map": "/Xplayer-react/static/js/main.51ef543e.chunk.js.map",
+    "main.js": "/Xplayer-react/static/js/main.56e6d79b.chunk.js",
+    "main.js.map": "/Xplayer-react/static/js/main.56e6d79b.chunk.js.map",
     "runtime-main.js": "/Xplayer-react/static/js/runtime-main.0f2252b2.js",
     "runtime-main.js.map": "/Xplayer-react/static/js/runtime-main.0f2252b2.js.map",
     "static/css/2.42886335.chunk.css": "/Xplayer-react/static/css/2.42886335.chunk.css",
     "static/js/2.d82adf2a.chunk.js": "/Xplayer-react/static/js/2.d82adf2a.chunk.js",
     "static/js/2.d82adf2a.chunk.js.map": "/Xplayer-react/static/js/2.d82adf2a.chunk.js.map",
     "index.html": "/Xplayer-react/index.html",
-    "precache-manifest.0bfe2de00a5c0fcbcb798b32a3daaba8.js": "/Xplayer-react/precache-manifest.0bfe2de00a5c0fcbcb798b32a3daaba8.js",
+    "precache-manifest.39e03d6b94f51c311b921963352a1eb6.js": "/Xplayer-react/precache-manifest.39e03d6b94f51c311b921963352a1eb6.js",
     "service-worker.js": "/Xplayer-react/service-worker.js",
     "static/css/2.42886335.chunk.css.map": "/Xplayer-react/static/css/2.42886335.chunk.css.map",
     "static/css/main.0dc96e33.chunk.css.map": "/Xplayer-react/static/css/main.0dc96e33.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.42886335.chunk.css",
     "static/js/2.d82adf2a.chunk.js",
     "static/css/main.0dc96e33.chunk.css",
-    "static/js/main.51ef543e.chunk.js"
+    "static/js/main.56e6d79b.chunk.js"
   ]
 }
