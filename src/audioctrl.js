@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-const api = "https://xplayer-server.herokuapp.com";
+const api = "https://inexus.dev/react_app/xplayer";
 
 class AudioPlayer extends Component {
 	constructor(props) {
