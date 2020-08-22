@@ -8,7 +8,7 @@ class AudioPlayer extends Component {
 		this.state = {
 			playlist: [],
 		};
-		this.fetchSongs();
+		// this.fetchSongs();
 	}
 
 	music_player = () => document.querySelector("#music_player");
@@ -67,7 +67,7 @@ class AudioPlayer extends Component {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				action: "song_controller",
+				action: "addsong",
 				name,
 				title,
 				size,
@@ -96,7 +96,7 @@ class AudioPlayer extends Component {
 		})
 			.then((res) => res.json())
 			.then((res) => {
-				// console.log(res);
+				console.log(res);
 				this.updatePlaylist(res);
 			})
 			.catch((err) => console.log(err));
