@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 const api = "https://inexus.dev/react_app/xplayer";
 
@@ -60,25 +61,40 @@ class AudioPlayer extends Component {
 		 * source => the source of the song
 		 * duration => the duration of the song.
 		 */
-		await fetch(`${api}/song_controller.php`, {
-			method: "post",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
+		axios
+			.post(`${api}/song_controller.php`, {
 				action: "addsong",
 				name,
 				title,
 				size,
 				source,
 				duration,
-			}),
-		})
+			})
 			.then((res) => res.json())
-			.then((res) => this.updatePlaylist(res))
-			.catch((err) => console.log(err));
+			.then((res) => {
+				console.log(res);
+			});
 	};
+
+	// 	await fetch(`${api}/song_controller.php`, {
+	// 		method: "post",
+	// 		headers: {
+	// 			Accept: "application/json",
+	// 			"Content-Type": "application/json",
+	// 		},
+	// 		body: JSON.stringify({
+	// 			action: "addsong",
+	// 			name,
+	// 			title,
+	// 			size,
+	// 			source,
+	// 			duration,
+	// 		}),
+	// 	})
+	// 		.then((res) => res.json())
+	// 		.then((res) => this.updatePlaylist(res))
+	// 		.catch((err) => console.log(err));
+	// };
 
 	fetchSongs = async () => {
 		/*
