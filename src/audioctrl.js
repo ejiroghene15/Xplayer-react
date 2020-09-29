@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-
-const api = "https://inexus.dev/react_app/xplayer";
+// axios.defaults.baseURL = "https://inexus.dev/react_app/xplayer/";
+axios.defaults.baseURL = "http://localhost/tuts/";
+const API = axios.defaults.baseURL;
 
 class AudioPlayer extends Component {
 	constructor(props) {
@@ -9,113 +10,42 @@ class AudioPlayer extends Component {
 		this.state = {
 			playlist: [],
 		};
-		// this.fetchSongs();
+		this.fetchSongs();
 	}
 
 	music_player = () => document.querySelector("#music_player");
 
 	triggerUpload = () => document.querySelector("#upload_song").click();
 
-	songDuration = (duration) => {
-		duration = parseInt(duration);
-		let hours = parseInt(duration / (60 * 60));
-		let mins = parseInt((duration % (60 * 60)) / 60);
-		let secs = parseInt(duration % 60);
-		secs = secs < 10 ? `0${secs}` : secs;
-		return (duration =
-			hours > 0 ? `${hours}:${mins}:${secs}` : `${mins}:${secs}`);
-	};
-
-	getMp3Data = () => {
+	getMp3Data = async () => {
 		let _audio = document.querySelector("#upload_song");
 		let audio_files = _audio.files;
-		Array.from(audio_files).forEach((val, indx) => {
-			let { name, type, size } = _audio.files[indx];
+		let fd = new FormData();
+		fd.append("action", "addsong");
+
+		Array.from(audio_files).forEach(async (val, indx) => {
+			let { name, type } = _audio.files[indx];
 			if (type.match("audio/")) {
-				size = size / 1048576;
-				size = parseFloat(size).toPrecision(3) + " MB";
-				let reader = new FileReader();
-				let reader2 = reader;
-				reader.onload = async ({ target: { result } }) => {
-					reader2.onload = ({ target }) => {
-						let audioContext = new (window.AudioContext ||
-							window.webkitAudioContext)();
-						audioContext.decodeAudioData(target.result, async (buffer) => {
-							let duration = this.songDuration(buffer.duration);
-							await this.saveSong(name, name, size, result, duration);
-						});
-					};
-					reader2.readAsArrayBuffer(_audio.files[indx]);
-				};
-				reader.readAsDataURL(_audio.files[indx]);
+				fd.append(`${name}`, _audio.files[indx]);
+			}
+		});
+		await this.saveSong(fd);
+	};
+
+	saveSong = async (song) => {
+		axios.post(`song_controller.php`, song).then(({ data }) => {
+			if (data.status == true) {
+				this.updatePlaylist(data.songs);
 			}
 		});
 	};
 
-	saveSong = async (name, title, size, source, duration) => {
-		/*
-		 * save the song to the db with the following params
-		 * name => primary key used to identify the song
-		 * title => Initially set to the name of the song, but can be edited.
-		 * size => the size of the song in mega bytes
-		 * source => the source of the song
-		 * duration => the duration of the song.
-		 */
-		axios
-			.post(`${api}/song_controller.php`, {
-				action: "addsong",
-				name,
-				title,
-				size,
-				source,
-				duration,
-			})
-			.then((res) => res.json())
-			.then((res) => {
-				console.log(res);
-			});
-	};
-
-	// 	await fetch(`${api}/song_controller.php`, {
-	// 		method: "post",
-	// 		headers: {
-	// 			Accept: "application/json",
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({
-	// 			action: "addsong",
-	// 			name,
-	// 			title,
-	// 			size,
-	// 			source,
-	// 			duration,
-	// 		}),
-	// 	})
-	// 		.then((res) => res.json())
-	// 		.then((res) => this.updatePlaylist(res))
-	// 		.catch((err) => console.log(err));
-	// };
-
 	fetchSongs = async () => {
-		/*
-		 * get all the songs stored in the database when the page loads
-		 */
-		await fetch(`${api}/song_controller.php`, {
-			method: "post",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				action: "getsongs",
-			}),
-		})
-			.then((res) => res.json())
-			.then((res) => {
-				console.log(res);
-				this.updatePlaylist(res);
-			})
-			.catch((err) => console.log(err));
+		axios.get(`song_controller.php`).then(({ data }) => {
+			if (data.status == true) {
+				this.updatePlaylist(data.songs);
+			}
+		});
 	};
 
 	togglePlayer = (source) => {
@@ -164,19 +94,29 @@ class AudioPlayer extends Component {
 }
 
 const MusicList = ({ playlist, togglePlayer }) => {
+	let songDuration = (duration) => {
+		duration = parseInt(duration);
+		let hours = parseInt(duration / (60 * 60));
+		let mins = parseInt((duration % (60 * 60)) / 60);
+		let secs = parseInt(duration % 60);
+		secs = secs < 10 ? `0${secs}` : secs;
+		return (duration =
+			hours > 0 ? `${hours}:${mins}:${secs}` : `${mins}:${secs}`);
+	};
+
 	return (
 		<React.Fragment>
 			<div className="list-group animate__animated animate__fadeIn">
 				{playlist.map(({ name, title, source, size, duration }, key) => (
 					<div
 						key={key}
-						onClick={() => togglePlayer(`${api}/${source}`)}
+						onClick={() => togglePlayer(`${API}${source}`)}
 						className="list-group-item list-group-item-action "
 					>
 						<div className="d-flex flex-column">
 							<div className="d-flex justify-content-between">
 								<h6>{title}</h6>
-								<small>{duration}</small>
+								<small>{songDuration(duration)}</small>
 							</div>
 							<small>
 								<b>{size} </b>
