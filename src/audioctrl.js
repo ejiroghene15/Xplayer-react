@@ -15,8 +15,7 @@ toastr.options.timeOut = 5000;
 
 const AudioCxt = React.createContext();
 // axios.defaults.baseURL = "https://inexus.dev/react_app/xplayer/";
-
-if (location.hostname === "localhost") {
+if (window.location.hostname === "localhost") {
 	axios.defaults.baseURL = "http://localhost/tuts/";
 } else {
 	axios.defaults.baseURL = "https://celibate.000webhostapp.com/";
