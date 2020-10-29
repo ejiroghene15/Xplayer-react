@@ -2,15 +2,16 @@ import React, { Component, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faDownload,
 	faFastBackward,
 	faFastForward,
 	faPause,
 	faPlay,
-	faRedo,
-	faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { songDuration } from "./feature";
+import toastr from "toastr";
+import "boxicons/css/boxicons.min.css";
+
+toastr.options.timeOut = 5000;
 
 const AudioCxt = React.createContext();
 // axios.defaults.baseURL = "https://inexus.dev/react_app/xplayer/";
@@ -55,19 +56,24 @@ class AudioPlayer extends Component {
 	};
 
 	deleteSong = (song) => {
-		let fd = new FormData();
-		fd.append("action", "delete");
-		fd.append("song_name", song);
+		let { currentSrc } = this.music_player();
+		if (currentSrc !== `${API}${song}`) {
+			let fd = new FormData();
+			fd.append("action", "delete");
+			fd.append("song_name", song);
 
-		axios.post(`song_controller.php`, fd).then(({ data }) => {
-			if (data.status == true) {
-				this.updatePlaylist(data.songs);
-			} else {
-				this.setState({
-					playlist: [],
-				});
-			}
-		});
+			axios.post(`song_controller.php`, fd).then(({ data }) => {
+				if (data.status == true) {
+					this.updatePlaylist(data.songs);
+				} else {
+					this.setState({
+						playlist: [],
+					});
+				}
+			});
+		} else {
+			toastr.warning("You cannot delete the current track playing");
+		}
 	};
 
 	fetchSongs = async () => {
@@ -79,7 +85,7 @@ class AudioPlayer extends Component {
 				}
 			})
 			.catch((err) =>
-				this.setState({ message: "Sorry, unable to get songs at the momemt" })
+				this.setState({ message: "Sorry, unable to get songs at the moment" })
 			);
 	};
 
@@ -159,10 +165,12 @@ const MusicList = (props) => {
 							data-source={`${API}${source}`}
 						>
 							<div className="d-flex flex-column">
-								<div className="d-flex justify-content-between">
-									<h6>{title}</h6>
-									<small>{songDuration(duration)}</small>
-								</div>
+								<h6 className="m-0" style={{ wordBreak: "break-word" }}>
+									{title}
+								</h6>
+								<small className="align-self-end">
+									{songDuration(duration)}
+								</small>
 								<small>
 									<b>{size} </b>
 								</small>
@@ -174,13 +182,13 @@ const MusicList = (props) => {
 								href={`${API}${source}`}
 								className="btn btn-sm btn-dark border-left-0"
 							>
-								<FontAwesomeIcon icon={faDownload} />
+								<i class="bx bxs-download"></i>
 							</a>
 							<button
 								className="btn btn-sm btn-danger border-left-0"
 								onClick={() => deleteSong(source)}
 							>
-								<FontAwesomeIcon icon={faTrash} />
+								<i class="bx bx-trash"></i>
 							</button>
 						</section>
 					</div>
@@ -281,6 +289,7 @@ const TrackBar = () => {
 			elem.classList.add(...cl);
 			setPlayingTitle(elem.dataset.songTitle);
 			player().play();
+			toastr.info(elem.dataset.songTitle, "Now Playing");
 		}
 	};
 
@@ -321,12 +330,12 @@ const TrackBar = () => {
 							<FontAwesomeIcon icon={faFastForward} />
 						</button>
 					</div>
-					<span className="ml-auto">
+					<span className="ml-auto mt-1">
 						<small
-							className={loop ? "btn btn-light" : "btn btn-dark"}
+							className={`px-2 py-0 ${loop ? "btn btn-light" : "btn btn-dark"}`}
 							onClick={() => repeatSong()}
 						>
-							<FontAwesomeIcon icon={faRedo} />
+							<i class="bx bx-repeat"></i>
 						</small>
 					</span>
 				</section>
@@ -337,7 +346,7 @@ const TrackBar = () => {
 						min="0"
 						className="align-middle"
 						style={{ flexGrow: 100 }}
-						disabled={!playing}
+						// disabled={!playing}
 					/>
 
 					<small id="tm" className="align-middle ml-2 font-weight-bold">
