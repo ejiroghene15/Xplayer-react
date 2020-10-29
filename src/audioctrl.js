@@ -1,5 +1,18 @@
-import React, { Component } from "react";
+import React, { Component, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faDownload,
+	faFastBackward,
+	faFastForward,
+	faPause,
+	faPlay,
+	faRedo,
+	faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { songDuration } from "./feature";
+
+const AudioCxt = React.createContext();
 // axios.defaults.baseURL = "https://inexus.dev/react_app/xplayer/";
 axios.defaults.baseURL = "http://localhost/tuts/";
 const API = axios.defaults.baseURL;
@@ -9,6 +22,7 @@ class AudioPlayer extends Component {
 		super(props);
 		this.state = {
 			playlist: [],
+			message: "Playlist is empty, upload a song",
 		};
 		this.fetchSongs();
 	}
@@ -40,12 +54,33 @@ class AudioPlayer extends Component {
 		});
 	};
 
-	fetchSongs = async () => {
-		axios.get(`song_controller.php`).then(({ data }) => {
+	deleteSong = (song) => {
+		let fd = new FormData();
+		fd.append("action", "delete");
+		fd.append("song_name", song);
+
+		axios.post(`song_controller.php`, fd).then(({ data }) => {
 			if (data.status == true) {
 				this.updatePlaylist(data.songs);
+			} else {
+				this.setState({
+					playlist: [],
+				});
 			}
 		});
+	};
+
+	fetchSongs = async () => {
+		axios
+			.get(`song_controller.php`)
+			.then(({ data }) => {
+				if (data.status == true) {
+					this.updatePlaylist(data.songs);
+				}
+			})
+			.catch((err) =>
+				this.setState({ message: "Sorry, unable to get songs at the momemt" })
+			);
 	};
 
 	togglePlayer = (source) => {
@@ -70,60 +105,245 @@ class AudioPlayer extends Component {
 	};
 
 	render() {
-		const { playlist } = this.state;
+		const { playlist, message } = this.state;
 		return (
 			<React.Fragment>
-				<button className="btn btn-sm btn-info" onClick={this.triggerUpload}>
-					Upload Song
-				</button>
-				<input
-					type="file"
-					accept="audio/*"
-					className="d-none"
-					id="upload_song"
-					multiple
-					onChange={this.getMp3Data.bind(this)}
-				/>
-				<audio controls id="music_player" className="d-none"></audio>
-				{playlist.length > 0 ? (
-					<MusicList playlist={playlist} togglePlayer={this.togglePlayer} />
-				) : null}
+				<section className="container-fluid">
+					<button
+						className="btn btn-sm btn-dark my-3"
+						onClick={this.triggerUpload}
+					>
+						Upload Song
+					</button>
+					<input
+						type="file"
+						accept="audio/*"
+						className="d-none"
+						id="upload_song"
+						multiple
+						onChange={this.getMp3Data.bind(this)}
+					/>
+					<audio controls id="music_player" className="d-none"></audio>
+					{playlist.length > 0 ? (
+						<AudioCxt.Provider
+							value={{
+								player: this.music_player,
+								togglePlayer: this.togglePlayer,
+							}}
+						>
+							<MusicList playlist={playlist} deleteSong={this.deleteSong} />
+							<TrackBar />
+						</AudioCxt.Provider>
+					) : (
+						<div>{message}</div>
+					)}
+				</section>
 			</React.Fragment>
 		);
 	}
 }
 
-const MusicList = ({ playlist, togglePlayer }) => {
-	let songDuration = (duration) => {
-		duration = parseInt(duration);
-		let hours = parseInt(duration / (60 * 60));
-		let mins = parseInt((duration % (60 * 60)) / 60);
-		let secs = parseInt(duration % 60);
-		secs = secs < 10 ? `0${secs}` : secs;
-		return (duration =
-			hours > 0 ? `${hours}:${mins}:${secs}` : `${mins}:${secs}`);
-	};
+const MusicList = (props) => {
+	let { playlist, deleteSong } = props;
+	let { togglePlayer } = useContext(AudioCxt);
 
 	return (
 		<React.Fragment>
 			<div className="list-group animate__animated animate__fadeIn">
-				{playlist.map(({ name, title, source, size, duration }, key) => (
-					<div
-						key={key}
-						onClick={() => togglePlayer(`${API}${source}`)}
-						className="list-group-item list-group-item-action "
-					>
-						<div className="d-flex flex-column">
-							<div className="d-flex justify-content-between">
-								<h6>{title}</h6>
-								<small>{songDuration(duration)}</small>
+				{playlist.map(({ title, source, size, duration }, key) => (
+					<div className="d-flex mb-3" key={key}>
+						<div
+							onClick={() => togglePlayer(`${API}${source}`)}
+							className="list-group-item list-group-item-action border-right-0 sl"
+							data-song-title={title}
+							data-source={`${API}${source}`}
+						>
+							<div className="d-flex flex-column">
+								<div className="d-flex justify-content-between">
+									<h6>{title}</h6>
+									<small>{songDuration(duration)}</small>
+								</div>
+								<small>
+									<b>{size} </b>
+								</small>
 							</div>
-							<small>
-								<b>{size} </b>
-							</small>
 						</div>
+						<section className="d-flex justify-content-between flex-column">
+							<a
+								download={title}
+								href={`${API}${source}`}
+								className="btn btn-sm btn-dark border-left-0"
+							>
+								<FontAwesomeIcon icon={faDownload} />
+							</a>
+							<button
+								className="btn btn-sm btn-danger border-left-0"
+								onClick={() => deleteSong(source)}
+							>
+								<FontAwesomeIcon icon={faTrash} />
+							</button>
+						</section>
 					</div>
 				))}
+			</div>
+		</React.Fragment>
+	);
+};
+
+const TrackBar = () => {
+	const { player } = useContext(AudioCxt);
+	let { paused, src } = player();
+	let [playing, setPlaying] = useState(false);
+	let [loop, setLoop] = useState(false);
+	let [playingTitle, setPlayingTitle] = useState("");
+	let cl = ["bg-secondary", "text-light"];
+
+	let tracker = () => document.querySelector("#tracker");
+	let time_monitor = () => document.querySelector("#tm");
+	let song_list = () => document.querySelectorAll(".sl");
+	player().onplay = () => (setPlaying(true), player().play(), trackTime());
+	player().onpause = () => (setPlaying(false), player().pause());
+	player().onended = () => {
+		if (!player().loop) {
+			changeSong("next");
+		}
+	};
+
+	let setActiveSong = () =>
+		song_list().forEach((elem, indx) => {
+			elem.classList.remove(...cl);
+		});
+
+	useEffect(() => {
+		tracker().addEventListener("input", (e) => {
+			let currtime = e.currentTarget.value;
+			player().currentTime = currtime;
+		});
+
+		song_list().forEach((elem, indx) => {
+			elem.addEventListener("click", () => {
+				setActiveSong();
+				setPlayingTitle(elem.dataset.songTitle);
+				elem.classList.add(...cl);
+			});
+		});
+	});
+
+	let repeatSong = () => {
+		setLoop(!loop);
+		player().loop = !loop;
+	};
+
+	let togglePlayer = () => {
+		return src.trim() !== ""
+			? paused
+				? player().play()
+				: player().pause()
+			: null;
+	};
+
+	let trackTime = () => {
+		let timer = setInterval(function () {
+			if (!(isNaN(player().currentTime) || isNaN(player().duration))) {
+				tracker().value = player().currentTime;
+				tracker().max = player().duration;
+
+				time_monitor().innerHTML = `<span>${songDuration(
+					player().currentTime
+				)}</span> / <span>${songDuration(player().duration)}</span>`;
+
+				if (player().ended == true) {
+					time_monitor().innerHTML = `<span>0:00</span> / <span>${songDuration(
+						player().duration
+					)}</span>`;
+
+					clearInterval(timer);
+					tracker().value = 0;
+				}
+			}
+		}, 1000);
+	};
+
+	let changeSong = (dir) => {
+		let { nextSibling, previousSibling } = document.querySelector(
+			`.sl[data-song-title='${playingTitle}']`
+		).parentNode;
+		if (
+			(dir == "next" && nextSibling !== null) ||
+			(dir == "prev" && previousSibling !== null)
+		) {
+			let elem =
+				dir == "next"
+					? nextSibling.childNodes[0]
+					: previousSibling.childNodes[0];
+			player().src = elem.dataset.source;
+			setActiveSong();
+			elem.classList.add(...cl);
+			setPlayingTitle(elem.dataset.songTitle);
+			player().play();
+		}
+	};
+
+	return (
+		<React.Fragment>
+			<div className="p-2 bg-dark text-light">
+				<section>
+					{playingTitle !== "" ? (
+						<div className="text-center">
+							<small>
+								<b className="d-block">Now Playing</b>
+								<p>{playingTitle}</p>
+							</small>
+						</div>
+					) : null}
+				</section>
+				<section className="d-flex">
+					<div className="btn-group" role="group">
+						<button
+							type="button"
+							className="btn btn-dark"
+							onClick={() => changeSong("prev")}
+						>
+							<FontAwesomeIcon icon={faFastBackward} />
+						</button>
+						<button
+							type="button"
+							className="btn btn-dark"
+							onClick={() => togglePlayer()}
+						>
+							<FontAwesomeIcon icon={playing ? faPause : faPlay} />
+						</button>
+						<button
+							type="button"
+							className="btn btn-dark"
+							onClick={() => changeSong("next")}
+						>
+							<FontAwesomeIcon icon={faFastForward} />
+						</button>
+					</div>
+					<span className="ml-auto">
+						<small
+							className={loop ? "btn btn-light" : "btn btn-dark"}
+							onClick={() => repeatSong()}
+						>
+							<FontAwesomeIcon icon={faRedo} />
+						</small>
+					</span>
+				</section>
+				<div className="d-flex mt-1">
+					<input
+						id="tracker"
+						type="range"
+						min="0"
+						className="align-middle"
+						style={{ flexGrow: 100 }}
+						disabled={!playing}
+					/>
+
+					<small id="tm" className="align-middle ml-2 font-weight-bold">
+						0:00 / 0:00
+					</small>
+				</div>
 			</div>
 		</React.Fragment>
 	);

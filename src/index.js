@@ -5,7 +5,6 @@ import "animate.css";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import AudioPlayer from "./audioctrl";
-// import { silence } from "./model/kitty";
 
 ReactDOM.render(
 	<React.StrictMode>
