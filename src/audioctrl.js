@@ -22,6 +22,7 @@ if (window.location.hostname === "localhost") {
 }
 
 const API = axios.defaults.baseURL;
+console.log(API);
 
 class AudioPlayer extends Component {
 	constructor(props) {
@@ -54,7 +55,7 @@ class AudioPlayer extends Component {
 
 	saveSong = async (song) => {
 		axios.post(`song_controller.php`, song).then(({ data }) => {
-			if (data.status == true) {
+			if (data.status === true) {
 				this.updatePlaylist(data.songs);
 			}
 		});
@@ -68,7 +69,7 @@ class AudioPlayer extends Component {
 			fd.append("song_name", song);
 
 			axios.post(`song_controller.php`, fd).then(({ data }) => {
-				if (data.status == true) {
+				if (data.status === true) {
 					this.updatePlaylist(data.songs);
 				} else {
 					this.setState({
@@ -85,7 +86,7 @@ class AudioPlayer extends Component {
 		axios
 			.get(`song_controller.php`)
 			.then(({ data }) => {
-				if (data.status == true) {
+				if (data.status === true) {
 					this.updatePlaylist(data.songs);
 				}
 			})
@@ -214,8 +215,18 @@ const TrackBar = () => {
 	let tracker = () => document.querySelector("#tracker");
 	let time_monitor = () => document.querySelector("#tm");
 	let song_list = () => document.querySelectorAll(".sl");
-	player().onplay = () => (setPlaying(true), player().play(), trackTime());
-	player().onpause = () => (setPlaying(false), player().pause());
+
+	player().onplay = () => {
+		setPlaying(true);
+		player().play();
+		trackTime();
+	};
+
+	player().onpause = () => {
+		setPlaying(false);
+		player().pause();
+	};
+
 	player().onended = () => {
 		if (!player().loop) {
 			changeSong("next");
@@ -265,7 +276,7 @@ const TrackBar = () => {
 					player().currentTime
 				)}</span> / <span>${songDuration(player().duration)}</span>`;
 
-				if (player().ended == true) {
+				if (player().ended === true) {
 					time_monitor().innerHTML = `<span>0:00</span> / <span>${songDuration(
 						player().duration
 					)}</span>`;
@@ -282,11 +293,11 @@ const TrackBar = () => {
 			`.sl[data-song-title='${playingTitle}']`
 		).parentNode;
 		if (
-			(dir == "next" && nextSibling !== null) ||
-			(dir == "prev" && previousSibling !== null)
+			(dir === "next" && nextSibling !== null) ||
+			(dir === "prev" && previousSibling !== null)
 		) {
 			let elem =
-				dir == "next"
+				dir === "next"
 					? nextSibling.childNodes[0]
 					: previousSibling.childNodes[0];
 			player().src = elem.dataset.source;
