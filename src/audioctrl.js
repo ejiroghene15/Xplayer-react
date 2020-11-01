@@ -143,8 +143,14 @@ class AudioPlayer extends Component {
 								togglePlayer: this.togglePlayer,
 							}}
 						>
-							<MusicList playlist={playlist} deleteSong={this.deleteSong} />
-							<TrackBar />
+							<p>Click on song to play/pause</p>
+							<div
+								className="d-flex flex-column justify-content-between mb-3"
+								style={{ height: "83vh" }}
+							>
+								<MusicList playlist={playlist} deleteSong={this.deleteSong} />
+								<TrackBar />
+							</div>
 						</AudioCxt.Provider>
 					) : (
 						<div>{message}</div>
@@ -362,7 +368,7 @@ const TrackBar = () => {
 						min="0"
 						className="align-middle"
 						style={{ flexGrow: 100 }}
-						// disabled={!playing}
+						disabled={src == "" ? true : false}
 					/>
 
 					<small id="tm" className="align-middle ml-2 font-weight-bold">
