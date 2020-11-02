@@ -368,7 +368,7 @@ const TrackBar = () => {
 						min="0"
 						className="align-middle"
 						style={{ flexGrow: 100 }}
-						disabled={src == "" ? true : false}
+						disabled={src === "" ? true : false}
 					/>
 
 					<small id="tm" className="align-middle ml-2 font-weight-bold">
